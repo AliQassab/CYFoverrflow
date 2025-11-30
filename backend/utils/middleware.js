@@ -31,7 +31,30 @@ export const configuredCors = () => {
 export const clientRouter = (apiRoot) => {
 	const staticDir = resolve(__dirname, "..", "static");
 	const router = Router();
-	router.use(express.static(staticDir));
+
+	// Serve static files with explicit MIME type configuration
+	router.use(
+		express.static(staticDir, {
+			setHeaders: (res, path) => {
+				// Ensure JavaScript files are served with correct MIME type
+				if (path.endsWith(".js")) {
+					res.setHeader(
+						"Content-Type",
+						"application/javascript; charset=utf-8",
+					);
+				} else if (path.endsWith(".mjs")) {
+					res.setHeader(
+						"Content-Type",
+						"application/javascript; charset=utf-8",
+					);
+				} else if (path.endsWith(".css")) {
+					res.setHeader("Content-Type", "text/css; charset=utf-8");
+				}
+			},
+		}),
+	);
+
+	// Fallback to index.html for non-API routes (SPA routing)
 	router.use((req, res, next) => {
 		if (req.method === "GET" && !req.url.startsWith(apiRoot)) {
 			return res.sendFile(join(staticDir, "index.html"));
