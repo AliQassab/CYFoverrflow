@@ -1,4 +1,5 @@
-const API_BASE_URL = "/api";
+const API_BASE_URL =
+	"https://w0k84c8ow08socsskc0c88cw.hosting.codeyourfuture.io/api";
 
 export const login = async (email, password) => {
 	const response = await fetch(`${API_BASE_URL}/auth/login`, {
