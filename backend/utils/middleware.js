@@ -19,7 +19,21 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 export const configuredCors = () => {
 	const frontendUrl = process.env.FRONTEND_URL || "http://localhost:5173";
 	const corsOptions = {
-		origin: frontendUrl,
+		origin: (origin, callback) => {
+			// Allow requests with no origin (like mobile apps or curl requests)
+			if (!origin) return callback(null, true);
+			
+			// Allow the configured frontend URL
+			if (origin === frontendUrl) return callback(null, true);
+			
+			// Allow localhost for development
+			if (origin.startsWith("http://localhost:") || origin.startsWith("http://127.0.0.1:")) {
+				return callback(null, true);
+			}
+			
+			// Reject other origins
+			callback(new Error("Not allowed by CORS"));
+		},
 		credentials: true,
 		allowedMethods: "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS",
 		allowedHeaders: "Content-Type,Authorization",

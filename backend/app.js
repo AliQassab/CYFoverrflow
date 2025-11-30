@@ -17,10 +17,8 @@ const API_ROOT = "/api";
 const app = express();
 
 app.use(express.json());
-// Only enable CORS if FRONTEND_URL is set (separate frontend deployment)
-if (process.env.FRONTEND_URL) {
-	app.use(configuredCors());
-}
+// Enable CORS - will use FRONTEND_URL if set, otherwise defaults to localhost for dev
+app.use(configuredCors());
 app.use(configuredHelmet());
 app.use(configuredMorgan());
 

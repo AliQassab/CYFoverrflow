@@ -1,5 +1,7 @@
 // Use environment variable for API base URL, fallback to "/api" for development proxy
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "/api";
+// If VITE_API_BASE_URL is set (production), ensure it ends with /api
+const baseUrl = import.meta.env.VITE_API_BASE_URL || "/api";
+const API_BASE_URL = baseUrl.endsWith("/api") ? baseUrl : `${baseUrl}/api`;
 
 export const login = async (email, password) => {
 	const response = await fetch(`${API_BASE_URL}/auth/login`, {
