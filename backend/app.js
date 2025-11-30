@@ -25,8 +25,13 @@ if (config.production) {
 }
 
 app.get("/healthz", async (_, res) => {
-	await testConnection();
-	res.sendStatus(200);
+	try {
+		await testConnection();
+		res.sendStatus(200);
+	} catch (error) {
+		// Database connection failed - return 503 Service Unavailable
+		res.status(503).json({ status: "unhealthy", error: "Database connection failed" });
+	}
 });
 
 app.use(API_ROOT, apiRouter);

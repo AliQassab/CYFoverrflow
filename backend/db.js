@@ -7,26 +7,29 @@ import logger from "./utils/logger.js";
 let pool;
 
 export const connectDb = async () => {
-	pool = new pg.Pool(config.dbConfig);
-	pool.on("error", (err) => logger.error("%O", err));
-	const client = await pool.connect();
-	logger.info("connected to %s", client.database);
-	client.release();
+  pool = new pg.Pool(config.dbConfig);
+  pool.on("error", (err) => logger.error("%O", err));
+  const client = await pool.connect();
+  logger.info("connected to %s", client.database);
+  client.release();
 };
 
 export const disconnectDb = async () => {
-	if (pool) {
-		await pool.end();
-	}
+  if (pool) {
+    await pool.end();
+  }
 };
 
 export const testConnection = async () => {
-	await query("SELECT 1;");
+  if (!pool) {
+    throw new Error("Database pool not initialized");
+  }
+  await query("SELECT 1;");
 };
 
 function query(...args) {
-	logger.debug("Postgres query: %O", args);
-	return pool.query.apply(pool, args);
+  logger.debug("Postgres query: %O", args);
+  return pool.query(...args);
 }
 
 export default { query };
