@@ -3,16 +3,16 @@ import { defineConfig } from "vite";
 
 // https://vite.dev/config/
 export default defineConfig({
-	plugins: [react()],
-	build: {
-		outDir: "../backend/static",
-	},
-	server: {
-		proxy: {
-			"/api": {
-				target: "http://localhost:3000",
-				changeOrigin: true,
-			},
-		},
-	},
+  plugins: [react()],
+  build: {
+    outDir: "dist",
+  },
+  server: {
+    proxy: {
+      "/api": {
+        target: "http://localhost:3000",
+        changeOrigin: true,
+      },
+    },
+  },
 });

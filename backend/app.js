@@ -5,6 +5,7 @@ import { testConnection } from "./db.js";
 import config from "./utils/config.js";
 import {
 	clientRouter,
+	configuredCors,
 	configuredHelmet,
 	configuredMorgan,
 	httpsOnly,
@@ -16,6 +17,10 @@ const API_ROOT = "/api";
 const app = express();
 
 app.use(express.json());
+// Only enable CORS if FRONTEND_URL is set (separate frontend deployment)
+if (process.env.FRONTEND_URL) {
+	app.use(configuredCors());
+}
 app.use(configuredHelmet());
 app.use(configuredMorgan());
 

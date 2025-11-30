@@ -12,16 +12,15 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 
 /**
  * CORS Middleware Configuration
- * This must be configured to allow your frontend origin (http://localhost:5173).
+ * Configure FRONTEND_URL environment variable for production.
+ * Defaults to http://localhost:5173 for development.
  * @returns {import("express").RequestHandler}
  */
 export const configuredCors = () => {
+	const frontendUrl = process.env.FRONTEND_URL || "http://localhost:5173";
 	const corsOptions = {
-		// Set this to your frontend's exact origin
-		origin: "http://localhost:5173",
-		// Allow credentials (like cookies or authorization headers)
+		origin: frontendUrl,
 		credentials: true,
-		// Allow the necessary methods and headers for the preflight request
 		allowedMethods: "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS",
 		allowedHeaders: "Content-Type,Authorization",
 	};
@@ -37,12 +36,7 @@ export const clientRouter = (apiRoot) => {
 		express.static(staticDir, {
 			setHeaders: (res, path) => {
 				// Ensure JavaScript files are served with correct MIME type
-				if (path.endsWith(".js")) {
-					res.setHeader(
-						"Content-Type",
-						"application/javascript; charset=utf-8",
-					);
-				} else if (path.endsWith(".mjs")) {
+				if (path.endsWith(".js") || path.endsWith(".mjs")) {
 					res.setHeader(
 						"Content-Type",
 						"application/javascript; charset=utf-8",

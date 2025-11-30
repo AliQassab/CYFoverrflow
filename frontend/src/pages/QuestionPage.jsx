@@ -120,7 +120,9 @@ const AskQuestionPage = () => {
 		};
 
 		try {
-			const response = await fetch("/api/questions", {
+			// Use environment variable for API base URL, fallback to "/api" for development proxy
+			const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || "/api";
+			const response = await fetch(`${apiBaseUrl}/questions`, {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",

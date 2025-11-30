@@ -1,5 +1,5 @@
-const API_BASE_URL =
-	"https://w0k84c8ow08socsskc0c88cw.hosting.codeyourfuture.io/api";
+// Use environment variable for API base URL, fallback to "/api" for development proxy
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "/api";
 
 export const login = async (email, password) => {
 	const response = await fetch(`${API_BASE_URL}/auth/login`, {
