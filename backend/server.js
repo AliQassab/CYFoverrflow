@@ -39,6 +39,6 @@ try {
     process.exit(1);
   });
 } catch (error) {
-  console.error("Fatal error during server startup:", error);
+  logger.error("Fatal error during server startup: %O", error);
   process.exit(1);
 }

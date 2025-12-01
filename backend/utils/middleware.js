@@ -21,50 +21,25 @@ export const configuredCors = () => {
 	const corsOptions = {
 		origin: (origin, callback) => {
 			// Allow requests with no origin (like mobile apps or curl requests)
-			if (!origin) {
-				logger.debug("CORS: Allowing request with no origin");
-				return callback(null, true);
-			}
+			if (!origin) return callback(null, true);
 			
-			logger.info("CORS: Checking origin: %s (FRONTEND_URL: %s)", origin, frontendUrl);
-			
-			// Allow the configured frontend URL (exact match)
-			if (origin === frontendUrl) {
-				logger.info("CORS: Allowing exact match");
-				return callback(null, true);
-			}
-			
-			// Allow if origin matches frontend URL (case-insensitive)
+			// Allow the configured frontend URL (case-insensitive)
 			if (origin.toLowerCase() === frontendUrl.toLowerCase()) {
-				logger.info("CORS: Allowing case-insensitive match");
 				return callback(null, true);
 			}
 			
 			// Allow localhost for development
 			if (origin.startsWith("http://localhost:") || origin.startsWith("http://127.0.0.1:")) {
-				logger.info("CORS: Allowing localhost");
 				return callback(null, true);
 			}
 			
-			// Allow all .hosting.codeyourfuture.io subdomains (more flexible check)
-			try {
-				const originUrl = new URL(origin);
-				if (originUrl.hostname.includes("hosting.codeyourfuture.io")) {
-					logger.info("CORS: Allowing CodeYourFuture hosting domain: %s", originUrl.hostname);
-					return callback(null, true);
-				}
-			} catch (e) {
-				// Invalid URL, continue to other checks
-			}
-			
-			// Also check string includes as fallback
+			// Allow all CodeYourFuture hosting domains
 			if (origin.includes("hosting.codeyourfuture.io")) {
-				logger.info("CORS: Allowing CodeYourFuture hosting domain (string check)");
 				return callback(null, true);
 			}
 			
 			// Reject other origins
-			logger.warn("CORS: Rejecting origin: %s (expected: %s)", origin, frontendUrl);
+			logger.warn("CORS: Rejecting origin: %s", origin);
 			callback(new Error("Not allowed by CORS"));
 		},
 		credentials: true,
