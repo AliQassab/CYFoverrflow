@@ -26,29 +26,40 @@ export const configuredCors = () => {
 				return callback(null, true);
 			}
 			
-			logger.debug("CORS: Checking origin: %s against frontend URL: %s", origin, frontendUrl);
+			logger.info("CORS: Checking origin: %s (FRONTEND_URL: %s)", origin, frontendUrl);
 			
 			// Allow the configured frontend URL (exact match)
 			if (origin === frontendUrl) {
-				logger.debug("CORS: Allowing exact match");
+				logger.info("CORS: Allowing exact match");
 				return callback(null, true);
 			}
 			
 			// Allow if origin matches frontend URL (case-insensitive)
 			if (origin.toLowerCase() === frontendUrl.toLowerCase()) {
-				logger.debug("CORS: Allowing case-insensitive match");
+				logger.info("CORS: Allowing case-insensitive match");
 				return callback(null, true);
 			}
 			
 			// Allow localhost for development
 			if (origin.startsWith("http://localhost:") || origin.startsWith("http://127.0.0.1:")) {
-				logger.debug("CORS: Allowing localhost");
+				logger.info("CORS: Allowing localhost");
 				return callback(null, true);
 			}
 			
-			// Allow all .hosting.codeyourfuture.io subdomains
-			if (origin.includes(".hosting.codeyourfuture.io")) {
-				logger.debug("CORS: Allowing CodeYourFuture hosting domain");
+			// Allow all .hosting.codeyourfuture.io subdomains (more flexible check)
+			try {
+				const originUrl = new URL(origin);
+				if (originUrl.hostname.includes("hosting.codeyourfuture.io")) {
+					logger.info("CORS: Allowing CodeYourFuture hosting domain: %s", originUrl.hostname);
+					return callback(null, true);
+				}
+			} catch (e) {
+				// Invalid URL, continue to other checks
+			}
+			
+			// Also check string includes as fallback
+			if (origin.includes("hosting.codeyourfuture.io")) {
+				logger.info("CORS: Allowing CodeYourFuture hosting domain (string check)");
 				return callback(null, true);
 			}
 			
@@ -128,3 +139,4 @@ export const logErrors = () => (err, _, res, next) => {
 function isHealthcheck(req) {
 	return req.path === "/healthz" && req.method === "GET";
 }
+
