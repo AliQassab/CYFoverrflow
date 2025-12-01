@@ -21,17 +21,39 @@ export const configuredCors = () => {
 	const corsOptions = {
 		origin: (origin, callback) => {
 			// Allow requests with no origin (like mobile apps or curl requests)
-			if (!origin) return callback(null, true);
+			if (!origin) {
+				logger.debug("CORS: Allowing request with no origin");
+				return callback(null, true);
+			}
 			
-			// Allow the configured frontend URL
-			if (origin === frontendUrl) return callback(null, true);
+			logger.debug("CORS: Checking origin: %s against frontend URL: %s", origin, frontendUrl);
+			
+			// Allow the configured frontend URL (exact match)
+			if (origin === frontendUrl) {
+				logger.debug("CORS: Allowing exact match");
+				return callback(null, true);
+			}
+			
+			// Allow if origin matches frontend URL (case-insensitive)
+			if (origin.toLowerCase() === frontendUrl.toLowerCase()) {
+				logger.debug("CORS: Allowing case-insensitive match");
+				return callback(null, true);
+			}
 			
 			// Allow localhost for development
 			if (origin.startsWith("http://localhost:") || origin.startsWith("http://127.0.0.1:")) {
+				logger.debug("CORS: Allowing localhost");
+				return callback(null, true);
+			}
+			
+			// Allow all .hosting.codeyourfuture.io subdomains
+			if (origin.includes(".hosting.codeyourfuture.io")) {
+				logger.debug("CORS: Allowing CodeYourFuture hosting domain");
 				return callback(null, true);
 			}
 			
 			// Reject other origins
+			logger.warn("CORS: Rejecting origin: %s (expected: %s)", origin, frontendUrl);
 			callback(new Error("Not allowed by CORS"));
 		},
 		credentials: true,

@@ -18,6 +18,7 @@ const app = express();
 
 app.use(express.json());
 // Enable CORS - will use FRONTEND_URL if set, otherwise defaults to localhost for dev
+// Also allows all .hosting.codeyourfuture.io domains
 app.use(configuredCors());
 app.use(configuredHelmet());
 app.use(configuredMorgan());
